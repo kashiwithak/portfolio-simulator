@@ -1,6 +1,6 @@
 
 
-profiles = load_profiles()
+
 
 # Sidebar: User & goal
 st.sidebar.header("👤 User Profile")
@@ -136,6 +136,8 @@ def load_profiles():
         with open(DATA_FILE, "r") as f:
             return json.load(f)
     return {}
+
+profiles = load_profiles()
 
 def save_profiles(profiles):
     with open(DATA_FILE, "w") as f:
