@@ -9,6 +9,11 @@ import altair as alt
 
 st.sidebar.header("👤 User Profile")
 
+if "assets" not in st.session_state:
+    st.session_state.assets = []
+if "remove_flags" not in st.session_state:
+    st.session_state.remove_flags = [False] * len(st.session_state.assets)
+
 
 # Setup session state
 if "remove_flags" not in st.session_state:
