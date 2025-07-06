@@ -85,7 +85,7 @@ for i, asset in enumerate(st.session_state.assets):
     with col5:
         if st.button("❌", key=f"remove_{i}"):
             st.session_state.remove_flags[i] = True
-            st.experimental_rerun()
+            st.rerun()
 
     target_price = st.slider(
         f"{asset['name']} Target Price",
