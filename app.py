@@ -2,55 +2,66 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="Portfolio Profit Simulator", layout="centered")
-st.title("📈 $1M Profit Goal Tracker")
+st.set_page_config(page_title="Custom Portfolio Profit Simulator", layout="centered")
+st.title("📊 Custom Portfolio Profit Tracker")
 
-st.markdown("Adjust your target prices to see projected returns.")
+st.markdown("Add your holdings, set a goal, and track your potential profit.")
 
-# Initial investment data
-data = {
-    'Asset': ['TSLA', 'TSLL', 'BTC', 'ALGO'],
-    'Amount': [760, 1920, 0.53813607, 42000],
-    'Avg Price': [350, 23, 61000, 0.2],
-    'Initial Investment': [266000, 44160, 32824, 8400]
-}
+# Input: Set profit goal
+profit_goal = st.number_input("Enter your profit goal ($):", min_value=0, value=1000000, step=10000)
 
-assets = pd.DataFrame(data)
+# Input: Add custom assets
+st.subheader("📥 Enter Your Assets")
 
-# Target sliders
-st.sidebar.header("🎯 Target Prices")
-tsla_target = st.sidebar.slider("TSLA Target Price", 200, 1200, 700)
-tsll_target = st.sidebar.slider("TSLL Target Price", 10, 60, 29)
-btc_target = st.sidebar.slider("BTC Target Price", 20000, 400000, 229000)
-algo_target = st.sidebar.slider("ALGO Target Price", 0.1, 10.0, 3.0, step=0.1)
+with st.form("asset_form"):
+    asset_names = st.text_area("Asset Names (comma separated)", value="TSLA, BTC, ALGO")
+    asset_amounts = st.text_area("Amounts Held (comma separated)", value="760, 0.538, 42000")
+    asset_avg_prices = st.text_area("Average Prices Paid (comma separated)", value="350, 61000, 0.2")
+    asset_target_prices = st.text_area("Target Prices (comma separated)", value="700, 229000, 3")
+    submitted = st.form_submit_button("Update Portfolio")
 
-# Calculate new values
-assets.loc[0, 'Target Value'] = tsla_target * assets.loc[0, 'Amount']
-assets.loc[1, 'Target Value'] = tsll_target * assets.loc[1, 'Amount']
-assets.loc[2, 'Target Value'] = btc_target * assets.loc[2, 'Amount']
-assets.loc[3, 'Target Value'] = algo_target * assets.loc[3, 'Amount']
+if submitted:
+    try:
+        names = [x.strip().upper() for x in asset_names.split(',')]
+        amounts = [float(x.strip()) for x in asset_amounts.split(',')]
+        avg_prices = [float(x.strip()) for x in asset_avg_prices.split(',')]
+        targets = [float(x.strip()) for x in asset_target_prices.split(',')]
 
-assets['Profit'] = assets['Target Value'] - assets['Initial Investment']
-assets['ROI (%)'] = (assets['Profit'] / assets['Initial Investment']) * 100
+        if not (len(names) == len(amounts) == len(avg_prices) == len(targets)):
+            st.error("All fields must have the same number of entries.")
+        else:
+            df = pd.DataFrame({
+                'Asset': names,
+                'Amount': amounts,
+                'Avg Price': avg_prices,
+                'Target Price': targets
+            })
 
-# Portfolio totals
-total_initial = assets['Initial Investment'].sum()
-total_target = assets['Target Value'].sum()
-total_profit = total_target - total_initial
-total_roi = (total_profit / total_initial) * 100
+            df['Initial Investment'] = df['Amount'] * df['Avg Price']
+            df['Target Value'] = df['Amount'] * df['Target Price']
+            df['Profit'] = df['Target Value'] - df['Initial Investment']
+            df['ROI (%)'] = (df['Profit'] / df['Initial Investment']) * 100
 
-# Display results
-st.subheader("📊 Portfolio Breakdown")
-st.dataframe(assets[['Asset', 'Amount', 'Initial Investment', 'Target Value', 'Profit', 'ROI (%)']], use_container_width=True)
+            total_initial = df['Initial Investment'].sum()
+            total_target = df['Target Value'].sum()
+            total_profit = total_target - total_initial
+            total_roi = (total_profit / total_initial) * 100
 
-st.subheader("💰 Summary")
-st.metric("Initial Investment", f"${total_initial:,.0f}")
-st.metric("Projected Value", f"${total_target:,.0f}")
-st.metric("Projected Profit", f"${total_profit:,.0f}")
-st.metric("ROI", f"{total_roi:.1f}%")
+            st.subheader("📈 Portfolio Breakdown")
+            st.dataframe(df[['Asset', 'Amount', 'Avg Price', 'Target Price', 'Initial Investment', 'Target Value', 'Profit', 'ROI (%)']], use_container_width=True)
 
-# Profit goal check
-if total_profit >= 1_000_000:
-    st.success("🎉 You reached your $1M profit goal!")
+            st.subheader("💰 Summary")
+            st.metric("Initial Investment", f"${total_initial:,.0f}")
+            st.metric("Projected Value", f"${total_target:,.0f}")
+            st.metric("Projected Profit", f"${total_profit:,.0f}")
+            st.metric("ROI", f"{total_roi:.1f}%")
+
+            if total_profit >= profit_goal:
+                st.success(f"🎉 You reached your ${profit_goal:,.0f} profit goal!")
+            else:
+                st.info(f"You need ${profit_goal - total_profit:,.0f} more in profit to hit your goal.")
+
+    except Exception as e:
+        st.error(f"Something went wrong: {e}")
 else:
-    st.info(f"You need ${1_000_000 - total_profit:,.0f} more in profit to hit your $1M goal.")
+    st.info("Enter your asset data and click 'Update Portfolio' to begin.")
