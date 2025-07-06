@@ -157,4 +157,4 @@ def calculate_portfolio_metrics(assets):
     total_profit = total_target - total_initial
     total_roi = (total_profit / total_initial) * 100
 
-    return df, total_initial, total_target, total_profit, total_roi "
+    return df, total_initial, total_target, total_profit, total_roi
