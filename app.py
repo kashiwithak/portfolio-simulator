@@ -9,10 +9,6 @@ import altair as alt
 
 st.sidebar.header("👤 User Profile")
 
-else:
-        "goal": 1000000,
-        "assets": []
-    }
 
 # Setup session state
 if "remove_flags" not in st.session_state:
