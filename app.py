@@ -143,9 +143,10 @@ def load_profiles():
     return {}
 
 def save_profiles(profiles):
-profiles = load_profiles()
     with open(DATA_FILE, "w") as f:
         json.dump(profiles, f, indent=2)
+        
+profiles = load_profiles()
 
 def calculate_portfolio_metrics(assets):
     if not assets:
