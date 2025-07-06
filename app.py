@@ -7,9 +7,6 @@ import altair as alt
 
 
 
-st.sidebar.header("👤 User Profile")
-
-
 # Setup session state
 if "assets" not in st.session_state:
     st.session_state.assets = []
