@@ -132,6 +132,7 @@ st.title("📈 Portfolio Profit Simulator")
 DATA_FILE = Path("profiles.json")
 
 def load_profiles():
+    profiles = load_profiles()
     if DATA_FILE.exists():
         with open(DATA_FILE, "r") as f:
             return json.load(f)
