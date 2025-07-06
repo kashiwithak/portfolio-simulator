@@ -119,7 +119,7 @@ if updated_assets:
     st.caption(f"You're at {percent_achieved:.2f}% of your ${profit_goal:,.0f} goal.")
 
     # Display full breakdown table
-    st.markdown(
+    st.markdown()
 
 
 import streamlit as st
